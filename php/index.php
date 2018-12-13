@@ -40,12 +40,13 @@ include('header.php');
           $user_name = "user";
           $password = "user";
           $port = "3308";
+          $category_choix = "";
 
           // Connection à la base de donnée
           $connect = mysqli_connect($host_name, $user_name, $password, $database,$port);
 
           // Lecture Base de donnée
-          $res = mysqli_query($connect,"SELECT name from category") or die (mysqli_error($connect));
+          $res = mysqli_query($connect,"SELECT name FROM category ORDER BY categoryID ASC") or die (mysqli_error($connect));
 
           // Lecture de chaque ligne dans la base de donnée
           while ($row = mysqli_fetch_array($res)) {
@@ -54,52 +55,40 @@ include('header.php');
             //echo "<option value=".$row["name"].">".$row["name"]."</option>";
           }
 
+          $adresse = $_SERVER['PHP_SELF'];
+          $i = 0;
+          foreach($_GET as $cle => $valeur){
+            $adresse .= ($i == 0 ? '?' : '&').$cle.($valeur ? '='.$valeur : '');
+            $i++;
+          }
+          if($adresse != "/git_pistachier/php/index.php"){
+
             // Lecture Base de donnée
             $res_choix = mysqli_query($connect,"SELECT categoryID from category where name LIKE ".$_GET['name']) or die (mysqli_error($connect));
             $res_choix->data_seek(0);
             $row = $res_choix->fetch_assoc();
             $category_choix = $row["categoryID"];
+          }
+          if($category_choix ==""){
+            //ALL
+            $category_choix = 4;
+          }
           ?>
         </div>
       </div>
       <!-- /.col-lg-3 -->
 
       <div class="col-lg-9">
-
-        <div id="carouselExampleIndicators" class="carousel slide my-4" data-ride="carousel">
-          <ol class="carousel-indicators">
-            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-          </ol>
-          <div class="carousel-inner" role="listbox">
-            <div class="carousel-item active">
-              <img class="d-block img-fluid" src="http://placehold.it/900x350" alt="First slide">
-            </div>
-            <div class="carousel-item">
-              <img class="d-block img-fluid" src="http://placehold.it/900x350" alt="Second slide">
-            </div>
-            <div class="carousel-item">
-              <img class="d-block img-fluid" src="http://placehold.it/900x350" alt="Third slide">
-            </div>
-          </div>
-          <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-          </a>
-          <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-          </a>
-        </div>
-
+        <br />
+        <br />
         <div class="row">
-
-
           <?php
-          // Lecture Base de donnée
-          $res = mysqli_query($connect,"SELECT productID,name,picture,qty_available,price,description from products where categoryID=".$category_choix."") or die (mysqli_error($connect));
-
+          if($category_choix != 4){
+            // Lecture Base de donnée
+            $res = mysqli_query($connect,"SELECT productID,name,picture,qty_available,price,description from products where categoryID=".$category_choix."") or die (mysqli_error($connect));
+          }else{
+            $res = mysqli_query($connect,"SELECT productID,name,picture,qty_available,price,description from products") or die (mysqli_error($connect));
+          }
           // Lecture de chaque ligne dans la base de donnée
           while ($row = mysqli_fetch_array($res)) {
             $name_product = $row["name"];
@@ -130,6 +119,7 @@ include('header.php');
             </div>
             <div class=\"card-footer\">
             <small class=\"text-muted\">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
+            <button type=\"button\" onclick=\"panier(".$productID.");\" class=\"btn btn-success offset-3\"> Ajouter</button>
             </div>
             </div>
             </div>
@@ -138,23 +128,29 @@ include('header.php');
           ?>
         </div>
         <!-- /.row -->
-
       </div>
       <!-- /.col-lg-9 -->
-
     </div>
     <!-- /.row -->
-
   </div>
   <!-- /.container -->
 
-
+  <br />
+  <br />
   <?php
   include('footer.php');
+/*
+  function panier($productIDSelected){
+    $res1 = $connect->query("INSERT INTO Basket (productID) VALUES (".$productIDSelected.")");
+  }
+  */
+
   // Fermeture de la connection mysql
   mysqli_close($connect);
   ?>
 
 </body>
+
+
 
 </html>
