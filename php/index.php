@@ -16,8 +16,8 @@ include('header.php');
             <a class="nav-link" href="login.php">Se connecter</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="basket.php">Panier
-              <img src="../files/basket.png" alt="basket" width ="10%">
+            <a class="nav-link" href="../basket.php">Panier
+              <img src="../images/basket.png" alt="basket" width ="10%">
             </a>
           </li>
         </ul>
