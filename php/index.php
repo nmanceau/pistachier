@@ -6,25 +6,19 @@ include('header.php');
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="#">LePistachier.com</a>
+      <a class="navbar-brand" href="index.php">LePistachier.com</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Home
-              <span class="sr-only">(current)</span>
+          <li class="nav-item">
+            <a class="nav-link" href="login.php">Se connecter</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="basket.php">Panier
+              <img src="../files/basket.png" alt="basket" width ="10%">
             </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Services</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
           </li>
         </ul>
       </div>
@@ -37,7 +31,6 @@ include('header.php');
     <div class="row">
 
       <div class="col-lg-3">
-
         <h1 class="my-4">Venez Pistachoter</h1>
         <div class="list-group">
           <?php
@@ -46,26 +39,28 @@ include('header.php');
           $database = "dii5_bd_pistachier";
           $user_name = "user";
           $password = "user";
+          $port = "3308";
 
           // Connection à la base de donnée
-          $connect = mysqli_connect($host_name, $user_name, $password, $database);
+          $connect = mysqli_connect($host_name, $user_name, $password, $database,$port);
 
           // Lecture Base de donnée
           $res = mysqli_query($connect,"SELECT name from category") or die (mysqli_error($connect));
 
           // Lecture de chaque ligne dans la base de donnée
           while ($row = mysqli_fetch_array($res)) {
-            //echo  "<option value ="."$serialNumber".">"."$serialNumber"."</option>";
-            echo "<a class='\list-group-item\'>".$row["name"]."</a>";
+            $name = $row["name"];
+            echo "<a href=\"index.php?name='".$name."'\" class=\"list-group-item\">".$name."</a>";
+            //echo "<option value=".$row["name"].">".$row["name"]."</option>";
           }
 
+            // Lecture Base de donnée
+            $res_choix = mysqli_query($connect,"SELECT categoryID from category where name LIKE ".$_GET['name']) or die (mysqli_error($connect));
+            $res_choix->data_seek(0);
+            $row = $res_choix->fetch_assoc();
+            $category_choix = $row["categoryID"];
           ?>
-
-          <a href="#" class="list-group-item">Category 1</a>
-          <a href="#" class="list-group-item">Category 2</a>
-          <a href="#" class="list-group-item">Category 3</a>
         </div>
-
       </div>
       <!-- /.col-lg-3 -->
 
@@ -100,102 +95,47 @@ include('header.php');
 
         <div class="row">
 
-          <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-              <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-              <div class="card-body">
-                <h4 class="card-title">
-                  <a href="#">Item One</a>
-                </h4>
-                <h5>$24.99</h5>
-                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur!</p>
-              </div>
-              <div class="card-footer">
-                <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
-              </div>
-            </div>
-          </div>
 
-          <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-              <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-              <div class="card-body">
-                <h4 class="card-title">
-                  <a href="#">Item Two</a>
-                </h4>
-                <h5>$24.99</h5>
-                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur! Lorem ipsum dolor sit amet.</p>
-              </div>
-              <div class="card-footer">
-                <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
-              </div>
-            </div>
-          </div>
+          <?php
+          // Lecture Base de donnée
+          $res = mysqli_query($connect,"SELECT productID,name,picture,qty_available,price,description from products where categoryID=".$category_choix."") or die (mysqli_error($connect));
 
-          <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-              <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-              <div class="card-body">
-                <h4 class="card-title">
-                  <a href="#">Item Three</a>
-                </h4>
-                <h5>$24.99</h5>
-                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur!</p>
-              </div>
-              <div class="card-footer">
-                <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
-              </div>
-            </div>
-          </div>
+          // Lecture de chaque ligne dans la base de donnée
+          while ($row = mysqli_fetch_array($res)) {
+            $name_product = $row["name"];
+            $price = $row["price"];
+            $picture = $row["picture"];
+            $qty_available = $row["qty_available"];
+            $productID = $row["productID"];
+            $description =  $row["description"];
 
-          <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-              <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-              <div class="card-body">
-                <h4 class="card-title">
-                  <a href="#">Item Four</a>
-                </h4>
-                <h5>$24.99</h5>
-                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur!</p>
-              </div>
-              <div class="card-footer">
-                <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
-              </div>
-            </div>
-          </div>
+            //echo  "<option value ="."$serialNumber".">"."$serialNumber"."</option>";
+            file_put_contents($productID.".jpg",$picture);
 
-          <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-              <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-              <div class="card-body">
-                <h4 class="card-title">
-                  <a href="#">Item Five</a>
-                </h4>
-                <h5>$24.99</h5>
-                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur! Lorem ipsum dolor sit amet.</p>
-              </div>
-              <div class="card-footer">
-                <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
-              </div>
+            echo "
+            <div class=\"col-lg-4 col-md-6 mb-4\">
+            <div class=\"card h-100\">
+            <img class=\"card-img-top\"  src='".$productID.".jpg'>
+            <div class=\"card-body\">
+            <h4 class=\"card-title\">
+            <a href=\"#\">".$name_product."</a>
+            </h4>
+            <h5>".$price." € </h5>
+            <p class=\"card-text\">
+            ".$description."
+            <br />
+            <br />
+            Il ne reste plus que ".$qty_available." produits disponible
+            </p>
             </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-              <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
-              <div class="card-body">
-                <h4 class="card-title">
-                  <a href="#">Item Six</a>
-                </h4>
-                <h5>$24.99</h5>
-                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur!</p>
-              </div>
-              <div class="card-footer">
-                <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
-              </div>
+            <div class=\"card-footer\">
+            <small class=\"text-muted\">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
             </div>
-          </div>
-
+            </div>
+            </div>
+            ";
+          }
+          ?>
         </div>
         <!-- /.row -->
 
@@ -212,7 +152,7 @@ include('header.php');
   <?php
   include('footer.php');
   // Fermeture de la connection mysql
-	mysqli_close($connect);
+  mysqli_close($connect);
   ?>
 
 </body>
