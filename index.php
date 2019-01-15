@@ -30,7 +30,7 @@ include('includes/header.php');
           $i++;
         }
 
-        if($adresse != "/pistachier/index.php"){
+        if($adresse != "/git_pistachier/index.php"){
           // Lecture Base de donnée
           $res_choix = mysqli_query($connect,"SELECT categoryID from category where name LIKE ".$_GET['name']) or die (mysqli_error($connect));
           $res_choix->data_seek(0);
@@ -94,7 +94,7 @@ include('includes/header.php');
           ";
           // Test si un utilisateur est loggé
           if($_SESSION['name'] != "" && $_SESSION['surname'] != ""){
-            echo "<button type=\"submit\" name=\"ajouter\" value=".$productID." class=\"btn btn-success offset-3\"> Ajouter</button>";  
+            echo "<button type=\"submit\" name=\"ajouter\" value=".$productID." class=\"btn btn-success offset-3\"> Ajouter</button>";
           }
           echo "</form>
           </div>

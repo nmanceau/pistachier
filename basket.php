@@ -1,4 +1,7 @@
 <?php
+// Démarrage de la session
+session_start();
+include('includes/connexion_bd.php');
 include('includes/header.php');
 ?>
 <!-- Page Content -->

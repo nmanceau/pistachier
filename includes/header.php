@@ -40,7 +40,8 @@
             <a class=\"nav-link\" href=\"deconnexion.php\">Se déconnecter</a>
             </li> ";
 
-            if ($_SERVER['PHP_SELF'] != "/pistachier/basket.php")
+            echo $_SERVER['PHP_SELF'];
+            if ($_SERVER['PHP_SELF'] != "/git_pistachier/basket.php")
             {
               echo "<li class=\"nav-item\">
                        <a class=\"nav-link\" href=\"basket.php\">
