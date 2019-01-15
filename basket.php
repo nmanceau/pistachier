@@ -3,7 +3,6 @@
 session_start();
 include('includes/connexion_bd.php');
 include('includes/header.php');
-include('includes/connexion_bd.php');
 ?>
 <!-- Page Content -->
 <div class="container">
