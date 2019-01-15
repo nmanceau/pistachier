@@ -89,10 +89,14 @@ include('includes/header.php');
           </p>
           </div>
           <div class=\"card-footer\">
-          <small class=\"text-muted\">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
           <form method=\"POST\" action=\"index.php\">
-          <button type=\"submit\" name=\"ajouter\" value=".$productID." class=\"btn btn-success offset-3\"> Ajouter</button>
-          </form>
+          <small class=\"text-muted\">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
+          ";
+          // Test si un utilisateur est loggé
+          if($_SESSION['name'] != "" && $_SESSION['surname'] != ""){
+            echo "<button type=\"submit\" name=\"ajouter\" value=".$productID." class=\"btn btn-success offset-3\"> Ajouter</button>";  
+          }
+          echo "</form>
           </div>
           </div>
           </div>
