@@ -18,15 +18,43 @@ include('includes/header.php');
       <!-- Subtitle -->
       <p class="lead">Merci pour votre commande !</p>
 
-      <!-- Product Card -->
-      <div class="card my-4">
-        <h5 class="card-header">Nespresso - Machine à café</h5>
-        <div class="card-body">
-          <img class="d-flsex mr-3 rounded"
-          src="./images/nespresso.png" alt="">
-          Machine à café Nespresso Vendue sans capsules
-        </div>
-      </div>
+      <?php
+
+      $user_id = 2;
+
+      $result = mysqli_query($connect,
+                             'SELECT p.name AS product_name,
+                              p.description AS product_desc,
+                              p.productID AS product_ID
+                              FROM products AS p
+                              INNER JOIN basket AS b
+                              ON b.productID = p.productID
+                              WHERE b.userID LIKE ' . $user_id
+                             );
+      if ($result)
+      {
+        while($row = mysqli_fetch_array($result))
+        {
+          echo '
+                <!-- Product Card -->
+                <div class="card my-4">
+                  <h5 class="card-header">'. $row['product_name'] .'</h5>
+                  <div class="card-body">
+                      <div class="col-lg-4 col-md-6 mb-4">
+                        <img class="card-img-top d-flsex mr-3 rounded"
+                        src="' . $row['product_ID'] . '.jpg" alt="TEST">
+                      </div>
+                    ' . $row['product_desc'] . '
+                  </div>
+                </div>
+               ';
+        }
+        mysqli_free_result($result);
+      }
+      else {
+        printf(mysqli_error($connect));
+      }
+      ?>
 
       <!-- Post Content -->
       <p class="lead">Paiement</p>
