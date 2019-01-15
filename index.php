@@ -30,7 +30,7 @@ include('includes/header.php');
           $i++;
         }
 
-        if($adresse != "/git_pistachier/index.php"){
+        if($adresse != "/pistachier/index.php"){
           // Lecture Base de donnée
           $res_choix = mysqli_query($connect,"SELECT categoryID from category where name LIKE ".$_GET['name']) or die (mysqli_error($connect));
           $res_choix->data_seek(0);
