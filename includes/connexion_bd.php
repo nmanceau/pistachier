@@ -1,12 +1,13 @@
 <?php
-// Variable de connexion à la base de donnée
+// Variable de connexion à la base de données
 $host_name = "localhost";
 $database = "dii5_bd_pistachier";
 $user_name = "user";
 $password = "user";
-$port = "3306";
+// Port MariaDB
+$port = "3308";
 
-// Connection à la base de donnée
+// Connection à la base de données
 $connect = mysqli_connect($host_name, $user_name, $password, $database, $port);
 
 if ($connect->connect_error)

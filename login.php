@@ -1,4 +1,8 @@
 <?php
+// Démarrage de la session
+session_start();
+include('includes/securite.php');
+include('includes/connexion_bd.php');
 include('includes/header.php');
 ?>
 <body style="background: url(images/tree.jpg) no-repeat center fixed; background-size: cover;">
@@ -20,10 +24,8 @@ include('includes/header.php');
               <input type="password" name="password" class="form-control" id="inputPassword" placeholder="Password">
             </div>
             <?php
-            include('includes/connexion_bd.php');
-            // Démarrage de la session
-            session_start();
 
+            // Test l'appui sur le bouton submit
             if(isset($_POST['submit']) && $_POST['submit']=='Login'){
               // Test si les champs login et password sont mises à 1
               if(isset($_POST["login"]) && isset($_POST["password"])){
@@ -31,17 +33,42 @@ include('includes/header.php');
                 $username = $_POST["login"];
                 $password = $_POST["password"];
 
-                // Lecture Base de donnée
-                $res_exist = $connect->query("SELECT EXISTS (SELECT * from users WHERE (email = '$username' and password = '$password')) AS user_exists");
-                $row_exist = mysqli_fetch_array($res_exist);
+                // Utilisation de l'algorithme bcrypt par défault
+                $password_hash = password_hash(trim($password), PASSWORD_DEFAULT);
+                echo $password_hash;
+                $password_verify = password_verify($password,$password_hash);
 
-                if ($row_exist['user_exists'] == 1) {
-                  // Lecture Base de donnée
-                  $res_user = $connect->query("SELECT surname, name from users WHERE (email = '$username' and password = '$password')");
+                // Test hachage
+                if ($password_verify) {
+                    echo 'Le mot de passe est valide !';
+                } else {
+                    echo 'Le mot de passe est invalide.';
+                }
+
+
+                // Test si l'utilisateur existe déjà dans la base de données
+                if($res_exist = mysqli_prepare($connect, "SELECT EXISTS (SELECT * from users WHERE email = ? and password = ? ) AS user_exists")){
+                  mysqli_stmt_bind_param($res_exist, "ss", Securite::bdd($connect,$username), Securite::bdd($connect,$password_hash));
+-
+                  if(!mysqli_stmt_execute($res_exist)){
+                    printf(mysqli_connect_error());
+                  }
+                  mysqli_stmt_bind_result($res_exist,$row_exist);
+                  mysqli_stmt_fetch($res_exist);
+                }else{
+                  printf(mysqli_connect_error());
+                }
+
+                if ($row_exist == 1) {
+                  mysqli_stmt_close($res_exist);
+
+                  // Récupération des informations de l'utilisateur
+                  $res_user = $connect->query("SELECT surname, name, userID from users WHERE email = '$username'");
                   $row_user = mysqli_fetch_array($res_user);
 
                   $_SESSION['surname'] = $row_user['surname'];
                   $_SESSION['name'] = $row_user['name'];
+                  $_SESSION['userID'] = $row_user['userID'];
                   header('Location: index.php');
                 }
                 else {

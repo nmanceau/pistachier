@@ -31,7 +31,7 @@
             $_SESSION['name'] = "";
           }
 
-          // Gestion de la Connection
+          // Gestion de la connection
           if($_SESSION["name"] != "" && $_SESSION["surname"] != ""){
             echo "
             <li class=\"nav-link\"> Bienvenue ".$_SESSION["surname"]." ".$_SESSION["name"]."

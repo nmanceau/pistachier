@@ -1,7 +1,6 @@
 <?php
 // Démarrage de la session
 session_start();
-
 include('includes/header.php');
 ?>
 <!-- Page Content -->
