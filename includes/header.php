@@ -38,11 +38,16 @@
             </li>
             <li class=\"nav-item\">
             <a class=\"nav-link\" href=\"deconnexion.php\">Se déconnecter</a>
-            </li>
-            <li class=\"nav-item\">
-            <a class=\"nav-link\" href=\"basket.php\"><i class=\"fas fa-cart-plus\"></i> Panier </a>
-            </li>
-            ";
+            </li> ";
+
+            if ($_SERVER['PHP_SELF'] != "/pistachier/basket.php")
+            {
+              echo "<li class=\"nav-item\">
+                       <a class=\"nav-link\" href=\"basket.php\">
+                          <i class=\"fas fa-cart-plus\"></i> Panier
+                       </a>
+                    </li>";
+            }
           }else{
             echo "
             <li class=\"nav-item\">
