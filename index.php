@@ -94,7 +94,7 @@ include('includes/header.php');
           ";
           // Test si un utilisateur est loggé
           if($_SESSION['name'] != "" && $_SESSION['surname'] != ""){
-            echo "<button type=\"submit\" name=\"ajouter\" value=".$productID." class=\"btn btn-success offset-3\"> Ajouter</button>";  
+            echo "<button type=\"submit\" name=\"ajouter\" value=".$productID." class=\"btn btn-success offset-3\"> Ajouter</button>";
           }
           echo "</form>
           </div>
