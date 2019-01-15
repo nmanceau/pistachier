@@ -25,13 +25,32 @@
       <a class="navbar-brand" href="index.php">LePistachier.com</a>
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="login.php">Se connecter</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="basket.php"><i class="fas fa-cart-plus"></i> Panier
-            </a>
-          </li>
+          <?php
+          if(!isset($_SESSION['surname']) && !isset($_SESSION['name'])){
+            $_SESSION['surname'] = "";
+            $_SESSION['name'] = "";
+          }
+
+          // Gestion de la Connection
+          if($_SESSION["name"] != "" && $_SESSION["surname"] != ""){
+            echo "
+            <li class=\"nav-link\"> Bienvenue ".$_SESSION["surname"]." ".$_SESSION["name"]."
+            </li>
+            <li class=\"nav-item\">
+            <a class=\"nav-link\" href=\"deconnexion.php\">Se déconnecter</a>
+            </li>
+            <li class=\"nav-item\">
+            <a class=\"nav-link\" href=\"basket.php\"><i class=\"fas fa-cart-plus\"></i> Panier </a>
+            </li>
+            ";
+          }else{
+            echo "
+            <li class=\"nav-item\">
+            <a class=\"nav-link\" href=\"login.php\">Se connecter</a>
+            </li>
+            ";
+          }
+          ?>
         </ul>
       </div>
     </div>

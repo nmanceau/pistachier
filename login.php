@@ -10,7 +10,7 @@ include('includes/header.php');
         <div class="login-form main_div">
           <div class="panel">
             <h2>Connectez vous à votre espace membre </h2>
-            <br />
+            <br/>
           </div>
           <form id="Login" method="post" action="login.php">
             <div class="form-group">
@@ -21,8 +21,10 @@ include('includes/header.php');
             </div>
             <?php
             include('includes/connexion_bd.php');
+            // Démarrage de la session
+            session_start();
 
-            if(isset($_POST['submit']) AND $_POST['submit']=='Login'){
+            if(isset($_POST['submit']) && $_POST['submit']=='Login'){
               // Test si les champs login et password sont mises à 1
               if(isset($_POST["login"]) && isset($_POST["password"])){
                 // Initialisation des variables
@@ -30,15 +32,22 @@ include('includes/header.php');
                 $password = $_POST["password"];
 
                 // Lecture Base de donnée
-                $res = $connect->query("SELECT EXISTS (SELECT * from users WHERE (email = '$username' and password = '$password')) AS user_exists");
-                $res->data_seek(0);
-                $row = $res->fetch_assoc();
+                $res_exist = $connect->query("SELECT EXISTS (SELECT * from users WHERE (email = '$username' and password = '$password')) AS user_exists");
+                $row_exist = mysqli_fetch_array($res_exist);
 
-                if ($row['user_exists'] == true) {
+                if ($row_exist['user_exists'] == 1) {
+                  // Lecture Base de donnée
+                  $res_user = $connect->query("SELECT surname, name from users WHERE (email = '$username' and password = '$password')");
+                  $row_user = mysqli_fetch_array($res_user);
+
+                  $_SESSION['surname'] = $row_user['surname'];
+                  $_SESSION['name'] = $row_user['name'];
                   header('Location: index.php');
                 }
                 else {
-                  $profil_db = 0;
+                  $_SESSION['surname'] = "";
+                  $_SESSION['name'] = "";
+                  echo "<h4> Votre identifiant et/ou mot de passe est erronées </h4>";
                 }
               }
             }

@@ -1,23 +1,17 @@
 <?php
+// Démarrage de la session
+session_start();
+
 include('includes/header.php');
 ?>
 <!-- Page Content -->
 <div class="container">
   <div class="row">
     <div class="col-lg-3">
-      <h1 class="my-4">Venez Pistachoter</h1>
+      <h1 class="my-4 text-center">Venez Pistachoter</h1>
       <div class="list-group">
         <?php
-        // Variable de connexion à la base de donnée
-        $host_name = "localhost";
-        $database = "dii5_bd_pistachier";
-        $user_name = "user";
-        $password = "user";
-        $port = "3308";
-        $category_choix = "";
-
-        // Connection à la base de donnée
-        $connect = mysqli_connect($host_name, $user_name, $password, $database,$port);
+        include('includes/connexion_bd.php');
 
         // Lecture Base de donnée
         $res = mysqli_query($connect,"SELECT name FROM category ORDER BY categoryID ASC") or die (mysqli_error($connect));
@@ -35,16 +29,19 @@ include('includes/header.php');
           $adresse .= ($i == 0 ? '?' : '&').$cle.($valeur ? '='.$valeur : '');
           $i++;
         }
-        if($adresse != "/git_pistachier/index.php"){
 
+        if($adresse != "/git_pistachier/index.php"){
           // Lecture Base de donnée
           $res_choix = mysqli_query($connect,"SELECT categoryID from category where name LIKE ".$_GET['name']) or die (mysqli_error($connect));
           $res_choix->data_seek(0);
           $row = $res_choix->fetch_assoc();
           $category_choix = $row["categoryID"];
+        }else{
+            $category_choix = 4;
         }
-        if($category_choix ==""){
-          //ALL
+
+        if($category_choix == ""){
+          //ALL = 4
           $category_choix = 4;
         }
         ?>
@@ -78,7 +75,7 @@ include('includes/header.php');
           echo "
           <div class=\"col-lg-4 col-md-6 mb-4\">
           <div class=\"card h-100\">
-          <img class=\"card-img-top\"  src='".$productID.".jpg'>
+          <img class=\"card-img-top\" src='".$productID.".jpg'>
           <div class=\"card-body\">
           <h4 class=\"card-title\">
           <a href=\"#\">".$name_product."</a>
@@ -93,14 +90,31 @@ include('includes/header.php');
           </div>
           <div class=\"card-footer\">
           <small class=\"text-muted\">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
-          <button type=\"button\" name=\"go\" OnClick=\"javascript:window.location.reload()\" value=".$productID." class=\"btn btn-success offset-3\"> Ajouter</button>
+          <form method=\"POST\" action=\"index.php\">
+          <button type=\"submit\" name=\"ajouter\" value=".$productID." class=\"btn btn-success offset-3\"> Ajouter</button>
+          </form>
           </div>
           </div>
           </div>
           ";
         }
 
-        $res1 = $connect->query("INSERT INTO Basket (productID) VALUES (1)");
+        // Test si un utilisateur est loggé
+        if($_SESSION['name'] != "" && $_SESSION['surname'] != ""){
+          // On test la déclaration de nos variables
+          if (isset($_POST['ajouter']) && $_POST['ajouter'] != "") {
+            // Récupération de l'ID du produit
+            $pID = $_POST['ajouter'];
+            // Récupération de l'ID de l'utilisateur
+            $select = mysqli_query($connect,"SELECT userID FROM users WHERE name = '".$_SESSION['name']."' AND surname = '".$_SESSION['surname']."'") or die (mysqli_error($connect));
+            $row = mysqli_fetch_array($select);
+            $uID = $row['userID'];
+
+            $res1 = $connect->query("INSERT INTO basket (userID, productID, quantity) VALUES ($uID,$pID,1)");
+          }
+        }else{
+          echo "Veuillez entrer vos identifiants";
+        }
         ?>
       </div>
       <!-- /.row -->
