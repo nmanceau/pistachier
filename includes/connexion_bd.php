@@ -10,8 +10,10 @@ $port = "3308";
 // Connection à la base de données
 $connect = mysqli_connect($host_name, $user_name, $password, $database, $port);
 
-if ($connect->connect_error)
-{
-  die("Connection failed: " . $connect->error);
+/* Vérification de la connexion */
+if (mysqli_connect_errno()) {
+    printf("Echec de la connexion : %s\n", mysqli_connect_error());
+    exit();
 }
+
 ?>

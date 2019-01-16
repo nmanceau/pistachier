@@ -1,11 +1,14 @@
 <?php
 // Démarrage de la session
 session_start();
+// Inclusion de la classe sécurité
 include('includes/securite.php');
+// Inclusion du fichier de connexion à la base de données
 include('includes/connexion_bd.php');
+// Incluse du fichier d'en tête
 include('includes/header.php');
 ?>
-<body style="background: url(images/tree.jpg) no-repeat center fixed; background-size: cover;">
+<body class="image_background">
   <div class="container-fluid" >
     <div class="row " >
       <div class="col-sm-4">
@@ -35,45 +38,61 @@ include('includes/header.php');
 
                 // Utilisation de l'algorithme bcrypt par défault
                 $password_hash = password_hash(trim($password), PASSWORD_DEFAULT);
-                echo $password_hash;
-                $password_verify = password_verify($password,$password_hash);
-
-                // Test hachage
-                if ($password_verify) {
-                    echo 'Le mot de passe est valide !';
-                } else {
-                    echo 'Le mot de passe est invalide.';
-                }
-
+                // Utilisation de l'affichage du password haché pour entrer en dur le mot de passe hashé en base de données
+                // echo $password_hash;
 
                 // Test si l'utilisateur existe déjà dans la base de données
-                if($res_exist = mysqli_prepare($connect, "SELECT EXISTS (SELECT * from users WHERE email = ? and password = ? ) AS user_exists")){
-                  mysqli_stmt_bind_param($res_exist, "ss", Securite::bdd($connect,$username), Securite::bdd($connect,$password_hash));
--
-                  if(!mysqli_stmt_execute($res_exist)){
+                if($stmt = mysqli_prepare($connect, "SELECT email, password from users WHERE email = ?")){
+                  // Lecture des paramètres de marques et utilisation de la classe de sécurité
+                  mysqli_stmt_bind_param($stmt, "s", Securite::bdd($connect,$username));
+
+                  /* Test et exécution de la requête */
+                  if(!mysqli_stmt_execute($stmt)){
                     printf(mysqli_connect_error());
                   }
-                  mysqli_stmt_bind_result($res_exist,$row_exist);
-                  mysqli_stmt_fetch($res_exist);
+                  // Récupération du password hashé et de l'email
+                  mysqli_stmt_bind_result($stmt,$emailBdd,$passwordBdd);
+                  // Récupération des valeurs
+                  mysqli_stmt_fetch($stmt);
+
+                  // Vérification du mot de passe
+                  $password_verify = password_verify(trim($password),$passwordBdd);
                 }else{
                   printf(mysqli_connect_error());
                 }
 
-                if ($row_exist == 1) {
-                  mysqli_stmt_close($res_exist);
+                // Test si l'email de l'utilisateur est en base de données et que son mot de passe est bon
+                if ($emailBdd != "" && $password_verify == true) {
+                  mysqli_stmt_close($stmt);
 
-                  // Récupération des informations de l'utilisateur
-                  $res_user = $connect->query("SELECT surname, name, userID from users WHERE email = '$username'");
-                  $row_user = mysqli_fetch_array($res_user);
+                  if($stmt = mysqli_prepare($connect,"SELECT surname, name, userID from users WHERE email = ?")){
+                    // Lecture des paramètres de marques et utilisation de la classe de sécurité
+                    mysqli_stmt_bind_param($stmt, "s", Securite::bdd($connect,$username));
 
-                  $_SESSION['surname'] = $row_user['surname'];
-                  $_SESSION['name'] = $row_user['name'];
-                  $_SESSION['userID'] = $row_user['userID'];
-                  header('Location: index.php');
+                    // Test et exécution de la requête
+                    if(!mysqli_stmt_execute($stmt)){
+                      printf(mysqli_connect_error());
+                    }
+                    // Récupération du prénom, nom et de l'ID de l'utilisateur
+                    mysqli_stmt_bind_result($stmt,$surnameBdd,$nameBdd,$userIDBdd);
+                    // Récupération des valeurs
+                    mysqli_stmt_fetch($stmt);
+
+                    // Récupération dans des variables sessions du nom, prénom et userID pour la personne connectée
+                    $_SESSION['surname'] = $surnameBdd;
+                    $_SESSION['name'] = $nameBdd;
+                    $_SESSION['userID'] = $userIDBdd;
+                    header('Location: index.php?name=%27ALL%27');
+
+                    mysqli_stmt_close($stmt);
+                  }
                 }
                 else {
+                  // Réinitialisation des variables de sessions
                   $_SESSION['surname'] = "";
                   $_SESSION['name'] = "";
+                  $_SESSION['userID'] = "";
+                  // Affichage d'un message d'erreur si l'identiant et/ ou mot de passe est faux
                   echo "<h4> Votre identifiant et/ou mot de passe est erronées </h4>";
                 }
               }

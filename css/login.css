@@ -60,3 +60,9 @@
 h4{
   color: red;
 }
+
+.image_background{
+  background: url(../images/tree.jpg)
+  no-repeat center fixed;
+  background-size: cover;
+}

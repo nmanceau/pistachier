@@ -13,7 +13,6 @@
 
   <!-- Custom styles for this template -->
   <link href="css/shop-homepage.css" rel="stylesheet">
-  <link href="css/2-col-portfolio.css" rel="stylesheet">
   <link href="css/login.css" rel="stylesheet">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 </head>
@@ -43,10 +42,10 @@
             if ($_SERVER['PHP_SELF'] != "/pistachier/basket.php")
             {
               echo "<li class=\"nav-item\">
-                       <a class=\"nav-link\" href=\"basket.php\">
-                          <i class=\"fas fa-cart-plus\"></i> Panier
-                       </a>
-                    </li>";
+              <a class=\"nav-link\" href=\"basket.php\">
+              <i class=\"fas fa-cart-plus\"></i> Panier
+              </a>
+              </li>";
             }
           }else{
             echo "
