@@ -7,9 +7,7 @@ class Securite
   public static function bdd($link, $string)
   {
     $string = mysqli_real_escape_string($link, $string);
-    $string = addcslashes($string, '%_');
-
-    return $string;
+    return addcslashes($string, '%_');
   }
 
   // Données sortantes

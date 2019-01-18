@@ -30,7 +30,7 @@
 }
 .login-form  .btn.btn-primary {
   background: #f0ad4e none repeat scroll 0 0;
-  border-color: #f0ad4e;;
+  border-color: #f0ad4e;
   color: #ffffff;
   font-size: 14px;
   width: 100%;
@@ -62,7 +62,7 @@ h4{
 }
 
 .image_background{
-  background: url(../images/tree.jpg)
+  background: url(../images/tree.jpg);
   no-repeat center fixed;
   background-size: cover;
 }

@@ -1,6 +1,7 @@
 <?php
 // Démarrage de la session
 session_start();
+
 // Inclusion du fichier d'ouverte de connexion à la base de données
 include('includes/connexion_bd.php');
 // Inclusion du fichier d'en tête
@@ -27,6 +28,11 @@ include('includes/header.php');
         // Libération des ressources associées au jeu de résultats
         mysqli_free_result($result);
 
+        // Cas du premier lancement de la page, pré selection de la catégorie à ALL
+        if (empty($_GET)) {
+          header('Location: index.php?name=%27ALL%27');
+        }
+
         // Récupération de l'ID de la catégorie sélectioné
         $result = mysqli_query($connect,"SELECT categoryID from category where name LIKE ".$_GET['name']) or die (mysqli_error($connect));
         $row = mysqli_fetch_array($result);
@@ -43,6 +49,10 @@ include('includes/header.php');
       <!-- row -->
       <div class="row">
         <?php
+        // Récupération dans des variables les variables de session
+        $surname = $_SESSION['surname'];
+        $name = $_SESSION['name'];
+
         // Test si la catégorie choisie n'est pas ALL
         if($category_choix != 4){
           // Récupération les informations des produits contenu dans la catégorie choisie
@@ -84,7 +94,7 @@ include('includes/header.php');
           <small class=\"text-muted\">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
           ";
           // Test si un utilisateur est loggé pour afficher ou non le bouton d'ajout au panier
-          if($_SESSION['name'] != "" && $_SESSION['surname'] != ""){
+          if($name != "" && $surname != ""){
             echo "<button type=\"submit\" name=\"ajouter\" value=".$productID." class=\"btn btn-success offset-3\"> Ajouter</button>";
           }
           echo "</form>
@@ -96,28 +106,25 @@ include('includes/header.php');
         // Libération des ressources associées au jeu de résultats
         mysqli_free_result($result);
 
-        // Test si un utilisateur est loggé
-        if($_SESSION['name'] != "" && $_SESSION['surname'] != ""){
-          // Test l'appui sur le bouton d'ajout au panier
-          if (isset($_POST['ajouter']) && $_POST['ajouter'] != "") {
-            // Récupération de l'ID du produit
-            $pID = $_POST['ajouter'];
-            // Récupération de l'ID de l'utilisateur
-            $result = mysqli_query($connect,"SELECT userID FROM users WHERE name = '".$_SESSION['name']."' AND surname = '".$_SESSION['surname']."'") or die (mysqli_error($connect));
-            $row = mysqli_fetch_array($result);
-            $uID = $row['userID'];
+        // Test si un utilisateur est loggé et Test l'appui sur le bouton d'ajout au panier
+        if($name != "" && $surname != "" && isset($_POST['ajouter']) && $_POST['ajouter'] != "") {
+          // Récupération de l'ID du produit
+          $pID = $_POST['ajouter'];
+          // Récupération de l'ID de l'utilisateur
+          $result = mysqli_query($connect,"SELECT userID FROM users WHERE name = '".$name."' AND surname = '".$surname."'") or die (mysqli_error($connect));
+          $row = mysqli_fetch_array($result);
+          $uID = $row['userID'];
 
-            // Libération des ressources associées au jeu de résultats
-            mysqli_free_result($result);
+          // Libération des ressources associées au jeu de résultats
+          mysqli_free_result($result);
 
-            $result = mysqli_query($connect,"SELECT productID FROM basket WHERE productID = $pID AND userID = $uID");
+          $result = mysqli_query($connect,"SELECT productID FROM basket WHERE productID = $pID AND userID = $uID");
 
-            $row = mysqli_fetch_array($result);
-            if($row['productID'] == ""){
-              $stmt = $connect->query("INSERT INTO basket (userID, productID, quantity) VALUES ($uID,$pID,1)");
-            }else{
-              echo "<script>alert(\"Le produit existe déjà dans le panier\")</script>";
-            }
+          $row = mysqli_fetch_array($result);
+          if($row['productID'] == ""){
+            $stmt = $connect->query("INSERT INTO basket (userID, productID, quantity) VALUES ($uID,$pID,1)");
+          }else{
+            echo "<script>alert(\"Le produit existe déjà dans le panier\")</script>";
           }
         }
         ?>

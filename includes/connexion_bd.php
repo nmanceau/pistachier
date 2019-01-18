@@ -3,12 +3,12 @@
 $host_name = "localhost";
 $database = "dii5_bd_pistachier";
 $user_name = "user";
-$password = "user";
+$mdp = "user";
 // Port MariaDB
-$port = "3308";
+$port = "3306";
 
 // Connection à la base de données
-$connect = mysqli_connect($host_name, $user_name, $password, $database, $port);
+$connect = mysqli_connect($host_name, $user_name, $mdp, $database, $port);
 
 /* Vérification de la connexion */
 if (mysqli_connect_errno()) {
