@@ -40,17 +40,16 @@ include('includes/header.php');
               // echo $password_hash;
 
               // Test si l'utilisateur existe déjà dans la base de données
-              if($stmt = mysqli_prepare($connect, "SELECT email, password from users WHERE email = ?")){
+              if($stmt = mysqli_prepare($connect, "SELECT email, surname, name, userID, password from users WHERE email = ?")){
                 // Lecture des paramètres de marques et utilisation de la classe de sécurité
-                // mysqli_stmt_bind_param($stmt, "s", Securite::bdd($connect,$username));
-                mysqli_stmt_bind_param($stmt, "s", $username);
+                mysqli_stmt_bind_param($stmt, "s", Securite::bdd($connect,$username));
 
                 /* Test et exécution de la requête */
                 if(!mysqli_stmt_execute($stmt)){
                   printf(mysqli_connect_error());
                 }
                 // Récupération du password hashé et de l'email
-                mysqli_stmt_bind_result($stmt,$emailBdd,$passwordBdd);
+                mysqli_stmt_bind_result($stmt,$emailBdd,$surnameBdd,$nameBdd,$userIDBdd,$passwordBdd);
                 // Récupération des valeurs
                 mysqli_stmt_fetch($stmt);
 
@@ -62,31 +61,13 @@ include('includes/header.php');
 
               // Test si l'email de l'utilisateur est en base de données et que son mot de passe est bon
               if ($emailBdd != "" && $password_verify) {
+                // Récupération dans des variables sessions du nom, prénom et userID pour la personne connectée
+                $_SESSION['surname'] = $surnameBdd;
+                $_SESSION['name'] = $nameBdd;
+                $_SESSION['userID'] = $userIDBdd;
+                header('Location: index.php?name=%27ALL%27');
+
                 mysqli_stmt_close($stmt);
-
-                if($stmt = mysqli_prepare($connect,"SELECT surname, name, userID from users WHERE email = ?")){
-                  // Lecture des paramètres de marques et utilisation de la classe de sécurité
-                  // mysqli_stmt_bind_param($stmt, "s", Securite::bdd($connect,$username));
-                  mysqli_stmt_bind_param($stmt, "s", $username);
-
-
-                  // Test et exécution de la requête
-                  if(!mysqli_stmt_execute($stmt)){
-                    printf(mysqli_connect_error());
-                  }
-                  // Récupération du prénom, nom et de l'ID de l'utilisateur
-                  mysqli_stmt_bind_result($stmt,$surnameBdd,$nameBdd,$userIDBdd);
-                  // Récupération des valeurs
-                  mysqli_stmt_fetch($stmt);
-
-                  // Récupération dans des variables sessions du nom, prénom et userID pour la personne connectée
-                  $_SESSION['surname'] = $surnameBdd;
-                  $_SESSION['name'] = $nameBdd;
-                  $_SESSION['userID'] = $userIDBdd;
-                  header('Location: index.php?name=%27ALL%27');
-
-                  mysqli_stmt_close($stmt);
-                }
               }else {
                 // Réinitialisation des variables de sessions
                 $_SESSION['surname'] = "";
