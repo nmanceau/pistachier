@@ -20,7 +20,7 @@ include('includes/header.php');
 
       <?php
 
-      $user_id = 2;
+      $user_id = $_SESSION['userID'];
 
       $result = mysqli_query($connect,
                              'SELECT p.name AS product_name,
@@ -40,11 +40,31 @@ include('includes/header.php');
                 <div class="card my-4">
                   <h5 class="card-header">'. $row['product_name'] .'</h5>
                   <div class="card-body">
-                      <div class="col-lg-4 col-md-6 mb-4">
-                        <img class="card-img-top d-flsex mr-3 rounded"
-                        src="' . $row['product_ID'] . '.jpg" alt="TEST">
+                    <div class="row mb-2">
+                      <div class="col-lg-3">
+                        <img class="card-img-top d-flsex rounded"
+                        src="./image_bd/' . $row['product_ID'] . '.jpg" alt="TEST">
                       </div>
-                    ' . $row['product_desc'] . '
+                      <div class="col-sm">
+                        ' . $row['product_desc'] . '
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm">
+                        <div class="row">
+                          <label for="quantity-input" class="col-6 col-form-label">Quantité</label>
+                          <div class="col-6">
+                            <input class="form-control" type="number" value="1" id="quantity-input">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-sm">
+
+                      </div>
+                      <div class="col-sm">
+
+                      </div>
+                    </div>
                   </div>
                 </div>
                ';
