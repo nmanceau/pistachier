@@ -7,5 +7,5 @@ $_SESSION['name'] = "";
 
 // Destruction de la session
 session_destroy();
-header('Location: index.php');
+header('Location: index.php?name=%27ALL%27');
 ?>

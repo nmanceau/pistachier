@@ -1,7 +1,14 @@
 <?php
+// Démarrage de la session
+session_start();
+// Inclusion de la classe sécurité
+include('includes/securite.php');
+// Inclusion du fichier de connexion à la base de données
+include('includes/connexion_bd.php');
+// Incluse du fichier d'en tête
 include('includes/header.php');
 ?>
-<body style="background: url(images/tree.jpg) no-repeat center fixed; background-size: cover;">
+<body class="image_background">
   <div class="container-fluid" >
     <div class="row " >
       <div class="col-sm-4">
@@ -20,35 +27,54 @@ include('includes/header.php');
               <input type="password" name="password" class="form-control" id="inputPassword" placeholder="Password">
             </div>
             <?php
-            include('includes/connexion_bd.php');
-            // Démarrage de la session
-            session_start();
 
-            if(isset($_POST['submit']) && $_POST['submit']=='Login'){
-              // Test si les champs login et password sont mises à 1
-              if(isset($_POST["login"]) && isset($_POST["password"])){
-                // Initialisation des variables
-                $username = $_POST["login"];
-                $password = $_POST["password"];
+            // Test l'appui sur le bouton submit et test si les champs login et password sont mises à 1
+            if(isset($_POST['submit']) && $_POST['submit']=='Login' && isset($_POST["login"]) && isset($_POST["password"])){
+              // Initialisation des variables
+              $username = $_POST["login"];
+              $password = $_POST["password"];
 
-                // Lecture Base de donnée
-                $res_exist = $connect->query("SELECT EXISTS (SELECT * from users WHERE (email = '$username' and password = '$password')) AS user_exists");
-                $row_exist = mysqli_fetch_array($res_exist);
+              // Utilisation de l'algorithme bcrypt par défault
+              $password_hash = password_hash(trim($password), PASSWORD_DEFAULT);
+              // Utilisation de l'affichage du password haché pour entrer en dur le mot de passe hashé en base de données
+              // echo $password_hash;
 
-                if ($row_exist['user_exists'] == 1) {
-                  // Lecture Base de donnée
-                  $res_user = $connect->query("SELECT surname, name from users WHERE (email = '$username' and password = '$password')");
-                  $row_user = mysqli_fetch_array($res_user);
+              // Test si l'utilisateur existe déjà dans la base de données
+              if($stmt = mysqli_prepare($connect, "SELECT email, surname, name, userID, password from users WHERE email = ?")){
+                // Lecture des paramètres de marques et utilisation de la classe de sécurité
+                mysqli_stmt_bind_param($stmt, "s", Securite::bdd($connect,$username));
 
-                  $_SESSION['surname'] = $row_user['surname'];
-                  $_SESSION['name'] = $row_user['name'];
-                  header('Location: index.php');
+                /* Test et exécution de la requête */
+                if(!mysqli_stmt_execute($stmt)){
+                  printf(mysqli_connect_error());
                 }
-                else {
-                  $_SESSION['surname'] = "";
-                  $_SESSION['name'] = "";
-                  echo "<h4> Votre identifiant et/ou mot de passe est erronées </h4>";
-                }
+                // Récupération du password hashé et de l'email
+                mysqli_stmt_bind_result($stmt,$emailBdd,$surnameBdd,$nameBdd,$userIDBdd,$passwordBdd);
+                // Récupération des valeurs
+                mysqli_stmt_fetch($stmt);
+
+                // Vérification du mot de passe
+                $password_verify = password_verify(trim($password),$passwordBdd);
+              }else{
+                printf(mysqli_connect_error());
+              }
+
+              // Test si l'email de l'utilisateur est en base de données et que son mot de passe est bon
+              if ($emailBdd != "" && $password_verify) {
+                // Récupération dans des variables sessions du nom, prénom et userID pour la personne connectée
+                $_SESSION['surname'] = $surnameBdd;
+                $_SESSION['name'] = $nameBdd;
+                $_SESSION['userID'] = $userIDBdd;
+                header('Location: index.php?name=%27ALL%27');
+
+                mysqli_stmt_close($stmt);
+              }else {
+                // Réinitialisation des variables de sessions
+                $_SESSION['surname'] = "";
+                $_SESSION['name'] = "";
+                $_SESSION['userID'] = "";
+                // Affichage d'un message d'erreur si l'identiant et/ ou mot de passe est faux
+                echo "<h4> Votre identifiant et/ou mot de passe est erronées </h4>";
               }
             }
             // Fermeture de la connection mysql

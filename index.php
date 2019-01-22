@@ -2,66 +2,67 @@
 // Démarrage de la session
 session_start();
 
+// Inclusion du fichier d'ouverte de connexion à la base de données
+include('includes/connexion_bd.php');
+// Inclusion du fichier d'en tête
 include('includes/header.php');
 ?>
 <!-- Page Content -->
 <div class="container">
+  <!-- row -->
   <div class="row">
+    <!-- col-lg-3 -->
     <div class="col-lg-3">
       <h1 class="my-4 text-center">Venez Pistachoter</h1>
       <div class="list-group">
         <?php
-        include('includes/connexion_bd.php');
+        // Requête SQL pour récupérer le nom des catégories
+        $result = mysqli_query($connect,"SELECT name FROM category ORDER BY categoryID ASC") or die (mysqli_error($connect));
 
-        // Lecture Base de donnée
-        $res = mysqli_query($connect,"SELECT name FROM category ORDER BY categoryID ASC") or die (mysqli_error($connect));
-
-        // Lecture de chaque ligne dans la base de donnée
-        while ($row = mysqli_fetch_array($res)) {
+        // Lecture de chaque ligne dans la base de données
+        while ($row = mysqli_fetch_array($result)) {
           $name = $row["name"];
+
           echo "<a href=\"index.php?name='".$name."'\" class=\"list-group-item\">".$name."</a>";
-          //echo "<option value=".$row["name"].">".$row["name"]."</option>";
+        }
+        // Libération des ressources associées au jeu de résultats
+        mysqli_free_result($result);
+
+        // Cas du premier lancement de la page, pré selection de la catégorie à ALL
+        if (empty($_GET)) {
+          header('Location: index.php?name=%27ALL%27');
         }
 
-        $adresse = $_SERVER['PHP_SELF'];
-        $i = 0;
-        foreach($_GET as $cle => $valeur){
-          $adresse .= ($i == 0 ? '?' : '&').$cle.($valeur ? '='.$valeur : '');
-          $i++;
-        }
-
-        if($adresse != "/pistachier/index.php"){
-          // Lecture Base de donnée
-          $res_choix = mysqli_query($connect,"SELECT categoryID from category where name LIKE ".$_GET['name']) or die (mysqli_error($connect));
-          $res_choix->data_seek(0);
-          $row = $res_choix->fetch_assoc();
-          $category_choix = $row["categoryID"];
-        }else{
-            $category_choix = 4;
-        }
-
-        if($category_choix == ""){
-          //ALL = 4
-          $category_choix = 4;
-        }
+        // Récupération de l'ID de la catégorie sélectioné
+        $result = mysqli_query($connect,"SELECT categoryID from category where name LIKE ".$_GET['name']) or die (mysqli_error($connect));
+        $row = mysqli_fetch_array($result);
+        $category_choix = $row["categoryID"];
         ?>
       </div>
     </div>
     <!-- /.col-lg-3 -->
 
+    <!-- col-lg-9 -->
     <div class="col-lg-9">
       <br />
       <br />
+      <!-- row -->
       <div class="row">
         <?php
+        // Récupération dans des variables les variables de session
+        $surname = $_SESSION['surname'];
+        $name = $_SESSION['name'];
+
+        // Test si la catégorie choisie n'est pas ALL
         if($category_choix != 4){
-          // Lecture Base de donnée
-          $res = mysqli_query($connect,"SELECT productID,name,picture,qty_available,price,description from products where categoryID=".$category_choix."") or die (mysqli_error($connect));
+          // Récupération les informations des produits contenu dans la catégorie choisie
+          $result = mysqli_query($connect,"SELECT productID,name,picture,qty_available,price,description from products where categoryID=".$category_choix."") or die (mysqli_error($connect));
         }else{
-          $res = mysqli_query($connect,"SELECT productID,name,picture,qty_available,price,description from products") or die (mysqli_error($connect));
+          // Récupération les informations des produits contenu dans toutes les catégories
+          $result = mysqli_query($connect,"SELECT productID,name,picture,qty_available,price,description from products") or die (mysqli_error($connect));
         }
-        // Lecture de chaque ligne dans la base de donnée
-        while ($row = mysqli_fetch_array($res)) {
+        // Lecture de chaque ligne dans la base de données
+        while ($row = mysqli_fetch_array($result)) {
           $name_product = $row["name"];
           $price = $row["price"];
           $picture = $row["picture"];
@@ -69,31 +70,31 @@ include('includes/header.php');
           $productID = $row["productID"];
           $description =  $row["description"];
 
-          //echo  "<option value ="."$serialNumber".">"."$serialNumber"."</option>";
-          file_put_contents($productID.".jpg",$picture);
+          // Ecriture de données dans un fichier
+          file_put_contents("image_bd/".$productID.".jpg",$picture);
 
+          // Affichage de la fiche produit
           echo "
           <div class=\"col-lg-4 col-md-6 mb-4\">
           <div class=\"card h-100\">
-          <img class=\"card-img-top\" src='".$productID.".jpg'>
+          <img class=\"card-img-top\" src='image_bd/".$productID.".jpg'>
           <div class=\"card-body\">
           <h4 class=\"card-title\">
           <a href=\"#\">".$name_product."</a>
           </h4>
           <h5>".$price." € </h5>
-          <p class=\"card-text\">
-          ".$description."
+          <p class=\"card-text\">".$description."
           <br />
           <br />
           Il ne reste plus que ".$qty_available." produits disponible
           </p>
           </div>
           <div class=\"card-footer\">
-          <form method=\"POST\" action=\"index.php\">
+          <form method=\"POST\" action=\"index.php?name=%27ALL%27\">
           <small class=\"text-muted\">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
           ";
-          // Test si un utilisateur est loggé
-          if($_SESSION['name'] != "" && $_SESSION['surname'] != ""){
+          // Test si un utilisateur est loggé pour afficher ou non le bouton d'ajout au panier
+          if($name != "" && $surname != ""){
             echo "<button type=\"submit\" name=\"ajouter\" value=".$productID." class=\"btn btn-success offset-3\"> Ajouter</button>";
           }
           echo "</form>
@@ -102,22 +103,29 @@ include('includes/header.php');
           </div>
           ";
         }
+        // Libération des ressources associées au jeu de résultats
+        mysqli_free_result($result);
 
-        // Test si un utilisateur est loggé
-        if($_SESSION['name'] != "" && $_SESSION['surname'] != ""){
-          // On test la déclaration de nos variables
-          if (isset($_POST['ajouter']) && $_POST['ajouter'] != "") {
-            // Récupération de l'ID du produit
-            $pID = $_POST['ajouter'];
-            // Récupération de l'ID de l'utilisateur
-            $select = mysqli_query($connect,"SELECT userID FROM users WHERE name = '".$_SESSION['name']."' AND surname = '".$_SESSION['surname']."'") or die (mysqli_error($connect));
-            $row = mysqli_fetch_array($select);
-            $uID = $row['userID'];
+        // Test si un utilisateur est loggé et Test l'appui sur le bouton d'ajout au panier
+        if($name != "" && $surname != "" && isset($_POST['ajouter']) && $_POST['ajouter'] != "") {
+          // Récupération de l'ID du produit
+          $pID = $_POST['ajouter'];
+          // Récupération de l'ID de l'utilisateur
+          $result = mysqli_query($connect,"SELECT userID FROM users WHERE name = '".$name."' AND surname = '".$surname."'") or die (mysqli_error($connect));
+          $row = mysqli_fetch_array($result);
+          $uID = $row['userID'];
 
-            $res1 = $connect->query("INSERT INTO basket (userID, productID, quantity) VALUES ($uID,$pID,1)");
+          // Libération des ressources associées au jeu de résultats
+          mysqli_free_result($result);
+
+          $result = mysqli_query($connect,"SELECT productID FROM basket WHERE productID = $pID AND userID = $uID");
+
+          $row = mysqli_fetch_array($result);
+          if($row['productID'] == ""){
+            $stmt = $connect->query("INSERT INTO basket (userID, productID, quantity) VALUES ($uID,$pID,1)");
+          }else{
+            echo "<script>alert(\"Le produit existe déjà dans le panier\")</script>";
           }
-        }else{
-          echo "Veuillez entrer vos identifiants";
         }
         ?>
       </div>
@@ -128,12 +136,11 @@ include('includes/header.php');
   <!-- /.row -->
 </div>
 <!-- /.container -->
-
 <br />
 <br />
 <?php
-include('includes/footer.php');
-
 // Fermeture de la connection mysql
 mysqli_close($connect);
+// Inclusion du fichier de bas de page
+include('includes/footer.php');
 ?>
