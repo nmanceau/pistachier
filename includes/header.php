@@ -39,7 +39,7 @@
             <a class=\"nav-link\" href=\"deconnexion.php\">Se déconnecter</a>
             </li> ";
 
-            if ($_SERVER['PHP_SELF'] != "/pistachier/basket.php")
+            if ($_SESSION['IsBasket'] == 0) // Afficher Bouton Panier
             {
               echo "<li class=\"nav-item\">
               <a class=\"nav-link\" href=\"basket.php\">

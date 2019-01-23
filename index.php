@@ -1,7 +1,7 @@
 <?php
 // Démarrage de la session
 session_start();
-
+$_SESSION['IsBasket'] = 0;
 // Inclusion du fichier d'ouverte de connexion à la base de données
 include('includes/connexion_bd.php');
 // Inclusion du fichier d'en tête
