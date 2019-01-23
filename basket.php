@@ -55,13 +55,21 @@ if (!empty($_GET["action"]))
       <h1 class="mt-4">Votre Panier</h1>
 
       <?php
-      $result = mysqli_query($connect, 'SELECT * FROM basket WHERE userID = ' . $user_id . ')');
+      $result = mysqli_query($connect, 'SELECT * FROM basket WHERE userID = ' . $user_id);
 
-      if ($result)
+      if (mysqli_num_rows($result) > 0)
       {
         echo '<a id="btnEmpty" href="basket.php?action=empty">
           <button type="button" class="btn btn-outline-danger">Vider mon panier</button>
         </a>';
+        $IsPayable = true;
+      }
+      else
+      {
+        echo '<div class="alert alert-danger" role="alert">
+          Votre panier est vide !
+        </div>';
+        $IsPayable = false;
       }
 
        ?>
@@ -130,95 +138,102 @@ if (!empty($_GET["action"]))
     }
     ?>
 
-    <!-- Post Content -->
-    <p class="lead">Paiement</p>
 
-    <form>
-      <!-- eCheque Payment Form -->
-      <div class="card my-4">
-        <h5 class="card-header">
-          <input class="form-check-input" type="radio" name="selectPayment"
-          id="selectPayment1" value="eChequePayment" checked>
-          <label class="form-check-label" for="selectPayment1">
-            eChèque
-          </label>
-        </h5>
-        <div class="card-body">
-          <p>Découvrez notre système eChèque très sécurisé !</p>
-          <div class="form-group">
-            <p>
-              Sélectionnez votre banque compatible
-              <select class="form-control" id="paymentFormBankSelect">
-                <option>Banque Populaire</option>
-                <option>BNP Paribas</option>
-                <option>Caisse d'Epargne</option>
-                <option>Crédit Agricole</option>
-                <option>Crédit Mutuel - CIC</option>
-                <option>HSBC</option>
-                <option>La Banque Postale</option>
-                <option>LCL</option>
-                <option>Société Générale</option>
-              </select>
-            </p>
-            <p>
-              <div class="row">
-                <div class="col">
-                  <input type="text" class="form-control"
-                  id="paymentFormBanckAccountNumber" placeholder="Numéro de compte">
+    <?php
+    if ($IsPayable !== false)
+    {
+    echo '
+      <!-- Post Content -->
+      <p class="lead">Paiement</p>
+
+      <form>
+        <!-- eCheque Payment Form -->
+        <div class="card my-4">
+          <h5 class="card-header">
+            <input class="form-check-input" type="radio" name="selectPayment"
+            id="selectPayment1" value="eChequePayment" checked>
+            <label class="form-check-label" for="selectPayment1">
+              eChèque
+            </label>
+          </h5>
+          <div class="card-body">
+            <p>Découvrez notre système eChèque très sécurisé !</p>
+            <div class="form-group">
+              <p>
+                Sélectionnez votre banque compatible
+                <select class="form-control" id="paymentFormBankSelect">
+                  <option>Banque Populaire</option>
+                  <option>BNP Paribas</option>
+                  <option>Caisse d\'Epargne</option>
+                  <option>Crédit Agricole</option>
+                  <option>Crédit Mutuel - CIC</option>
+                  <option>HSBC</option>
+                  <option>La Banque Postale</option>
+                  <option>LCL</option>
+                  <option>Société Générale</option>
+                </select>
+              </p>
+              <p>
+                <div class="row">
+                  <div class="col">
+                    <input type="text" class="form-control"
+                    id="paymentFormBanckAccountNumber" placeholder="Numéro de compte">
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control"
+                    id="paymentFormChequeNumber" placeholder="Numéro de chèque">
+                  </div>
                 </div>
-                <div class="col">
-                  <input type="text" class="form-control"
-                  id="paymentFormChequeNumber" placeholder="Numéro de chèque">
-                </div>
-              </div>
-            </p>
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Debit Card Payment Form -->
-      <div class="card my-4">
-        <h5 class="card-header">
-          <input class="form-check-input" type="radio" name="selectPayment"
-          id="selectPayment2" value="debitCardPayment">
-          <label class="form-check-label" for="selectPayment2">
-            Carte Bancaire
-          </label>
-        </h5>
-        <div class="card-body">
-          <div class="form-group">
-            <p>
-              Sélectionnez votre carte
-              <img src="./images/single.png" alt="payment options">
-              <select class="form-control" id="debitCardTypeSelect">
-                <option>Visa</option>
-                <option>MasterCard</option>
-                <option>CB</option>
-                <option>Visa Electron</option>
-                <option>American Express</option>
-              </select>
-            </p>
-            <p>
-              <div class="row">
-                <div class="col">
-                  <input type="text" class="form-control"
-                  id="paymentFormDebitCardNumber" placeholder="Numéro de carte">
+        <!-- Debit Card Payment Form -->
+        <div class="card my-4">
+          <h5 class="card-header">
+            <input class="form-check-input" type="radio" name="selectPayment"
+            id="selectPayment2" value="debitCardPayment">
+            <label class="form-check-label" for="selectPayment2">
+              Carte Bancaire
+            </label>
+          </h5>
+          <div class="card-body">
+            <div class="form-group">
+              <p>
+                Sélectionnez votre carte
+                <img src="./images/single.png" alt="payment options">
+                <select class="form-control" id="debitCardTypeSelect">
+                  <option>Visa</option>
+                  <option>MasterCard</option>
+                  <option>CB</option>
+                  <option>Visa Electron</option>
+                  <option>American Express</option>
+                </select>
+              </p>
+              <p>
+                <div class="row">
+                  <div class="col">
+                    <input type="text" class="form-control"
+                    id="paymentFormDebitCardNumber" placeholder="Numéro de carte">
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control"
+                    id="paymentFormCCVNumber" placeholder="CCV">
+                  </div>
                 </div>
-                <div class="col">
-                  <input type="text" class="form-control"
-                  id="paymentFormCCVNumber" placeholder="CCV">
-                </div>
-              </div>
-            </p>
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-2 offset-10">
-          <button type="submit" class="btn btn-primary col-12">Payer</button>
+        <div class="row">
+          <div class="col-2 offset-10">
+            <button type="submit" class="btn btn-primary col-12">Payer</button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>';
+    }
+    ?>
 
     <br />
 
@@ -255,22 +270,26 @@ if (!empty($_GET["action"]))
             Fermez vos gueules !!!
           </div>
         </div>
-
       </div>
     </div>
-
   </div>
 
   <!-- Sidebar Widgets Column -->
   <div class="col-md-4">
 
-    <!-- Search Widget -->
-    <div class="card my-4">
-      <h5 class="card-header">Montant de votre commande</h5>
-      <div class="card-body">
-        <label><strong>85,00 €</strong></label>
-      </div>
-    </div>
+    <!-- Basket Amount-->
+    <?php
+    if ($IsPayable !== false)
+    {
+    echo '
+      <div class="card my-4">
+        <h5 class="card-header">Montant de votre commande</h5>
+        <div class="card-body">
+          <label><strong>85,00 €</strong></label>
+        </div>
+      </div>';
+    }
+    ?>
 
     <!-- Categories Widget -->
     <div class="card my-4">
