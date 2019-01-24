@@ -7,6 +7,15 @@ include('includes/header.php');
 
 $user_id = $_SESSION['userID'];
 
+if (isset($_POST['quantity-input']) && isset($_POST['product-ID']))
+{
+  $result = mysqli_query($connect,
+    'UPDATE basket
+     SET quantity = ' . $_POST['quantity-input'] . '
+     WHERE userID LIKE ' . $user_id .
+     ' AND productID LIKE ' . $_POST['product-ID']);
+}
+
 if (!empty($_GET["action"]))
 {
   switch($_GET["action"])
@@ -60,7 +69,7 @@ if (!empty($_GET["action"]))
       if (mysqli_num_rows($result) > 0)
       {
         echo '<a id="btnEmpty" href="basket.php?action=empty">
-          <button type="button" class="btn btn-outline-danger">Vider mon panier</button>
+          <button type="button" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i> Vider mon panier</button>
         </a>';
         $IsPayable = true;
       }
@@ -72,16 +81,13 @@ if (!empty($_GET["action"]))
         $IsPayable = false;
       }
 
-       ?>
-
-      <?php
-
       $result = mysqli_query($connect,
       'SELECT p.name AS product_name,
       p.description AS product_desc,
       p.productID AS product_ID,
       p.qty_available AS product_qty,
-      p.price AS product_price
+      p.price AS product_price,
+      b.quantity AS prod_basket_qty
       FROM products AS p
       INNER JOIN basket AS b
       ON b.productID = p.productID
@@ -98,7 +104,7 @@ if (!empty($_GET["action"]))
         <h5 class="card-header">
         '. $row['product_name'] . '
         <a id="btnEmpty" href="basket.php?action=remove&productID=' . $row['product_ID'] . '">
-        <button type="button" class="btn btn-outline-danger btn-sm">Supprimer</button>
+        <button type="button" class="btn btn-outline-danger btn-sm"><i class="far fa-trash-alt"></i> Supprimer</button>
         </a>
         </h5>
         <div class="card-body">
@@ -116,12 +122,19 @@ if (!empty($_GET["action"]))
         <div class="row">
         <label for="quantity-input" class="col-6 col-form-label">Quantité</label>
         <div class="col-6">
-        <input class="form-control" type="number" value="1" min="0" max="' . $row['product_qty'] . '" id="quantity-input">
+
+        <form method="post" action="basket.php">
+        <div class="row">
+        <input name="quantity-input" class="col-8 form-control" type="number" value="' . $row['prod_basket_qty'] . '" min="0" max="' . $row['product_qty'] . '">
+        <input name="product-ID" type="number" value="' . $row['product_ID'] . '" style="display: none;"></input>
+        <button class="col-4 btn btn-success" type="submit"><i class="fas fa-sync-alt"></i></button>
+        </div>
+        </form>
         </div>
         </div>
         </div>
         <div class="col-sm">
-        <span><strong>' . $row['product_qty'] . '</strong> en stock</span>
+        <button type="button" class="btn btn-info" disabled><strong>' . $row['product_qty'] . '</strong> en stock</button>
         </div>
         <div class="col-sm">
         <span>Prix unitaire : <strong>' . $row['product_price'] . ' €</strong></span>
