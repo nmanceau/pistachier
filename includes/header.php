@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 <html lang="en">
 
 <head>
@@ -39,7 +40,7 @@
             <a class=\"nav-link\" href=\"deconnexion.php\">Se déconnecter</a>
             </li> ";
 
-            if ($_SERVER['PHP_SELF'] != "/pistachier/basket.php")
+            if ($_SESSION['IsBasket'] == 0) // Afficher Bouton Panier
             {
               echo "<li class=\"nav-item\">
               <a class=\"nav-link\" href=\"basket.php\">

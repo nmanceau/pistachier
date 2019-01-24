@@ -1,7 +1,7 @@
 <?php
 // Démarrage de la session
 session_start();
-
+$_SESSION['IsBasket'] = 0;
 // Inclusion du fichier d'ouverte de connexion à la base de données
 include('includes/connexion_bd.php');
 // Inclusion du fichier d'en tête
@@ -86,15 +86,21 @@ include('includes/header.php');
           <p class=\"card-text\">".$description."
           <br />
           <br />
-          Il ne reste plus que ".$qty_available." produits disponible
+          ";
+          if($qty_available != 0){
+            echo "Il ne reste plus que ".$qty_available." produits disponible";
+          }else{
+            echo "Cet article n'est plus disponible";
+          }
+          echo"
           </p>
           </div>
           <div class=\"card-footer\">
           <form method=\"POST\" action=\"index.php?name=%27ALL%27\">
           <small class=\"text-muted\">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
           ";
-          // Test si un utilisateur est loggé pour afficher ou non le bouton d'ajout au panier
-          if($name != "" && $surname != ""){
+          // Test si un utilisateur est loggé et que la quantité est différente de 0 pour afficher ou non le bouton d'ajout au panier
+          if($name != "" && $surname != "" && $qty_available != 0 ){
             echo "<button type=\"submit\" name=\"ajouter\" value=".$productID." class=\"btn btn-success offset-3\"> Ajouter</button>";
           }
           echo "</form>

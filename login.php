@@ -1,6 +1,7 @@
 <?php
 // Démarrage de la session
 session_start();
+$_SESSION['IsBasket'] = 0;
 // Inclusion de la classe sécurité
 include('includes/securite.php');
 // Inclusion du fichier de connexion à la base de données
@@ -37,7 +38,7 @@ include('includes/header.php');
               // Utilisation de l'algorithme bcrypt par défault
               $password_hash = password_hash(trim($password), PASSWORD_DEFAULT);
               // Utilisation de l'affichage du password haché pour entrer en dur le mot de passe hashé en base de données
-              // echo $password_hash;
+              //echo $password_hash;
 
               // Test si l'utilisateur existe déjà dans la base de données
               if($stmt = mysqli_prepare($connect, "SELECT email, surname, name, userID, password from users WHERE email = ?")){
