@@ -64,6 +64,7 @@ if (!empty($_GET["action"]))
       <h1 class="mt-4">Votre Panier</h1>
 
       <?php
+      $basket_amount = 0;
       $result = mysqli_query($connect, 'SELECT * FROM basket WHERE userID = ' . $user_id);
 
       if (mysqli_num_rows($result) > 0)
@@ -125,7 +126,7 @@ if (!empty($_GET["action"]))
 
         <form method="post" action="basket.php">
         <div class="row">
-        <input name="quantity-input" class="col-8 form-control" type="number" value="' . $row['prod_basket_qty'] . '" min="0" max="' . $row['product_qty'] . '">
+        <input name="quantity-input" class="col-8 form-control" type="number" value="' . $row['prod_basket_qty'] . '" min="1" max="' . $row['product_qty'] . '">
         <input name="product-ID" type="number" value="' . $row['product_ID'] . '" style="display: none;"></input>
         <button class="col-4 btn btn-success" type="submit"><i class="fas fa-sync-alt"></i></button>
         </div>
@@ -134,15 +135,16 @@ if (!empty($_GET["action"]))
         </div>
         </div>
         <div class="col-sm">
-        <button type="button" class="btn btn-info" disabled><strong>' . $row['product_qty'] . '</strong> en stock</button>
+        <button type="button" class="btn btn-info" disabled><i class="fas fa-info-circle"></i> <strong>' . $row['product_qty'] . '</strong> en stock</button>
         </div>
         <div class="col-sm">
-        <span>Prix unitaire : <strong>' . $row['product_price'] . ' €</strong></span>
+        <button type="button" class="btn btn-outline-danger" disabled>Prix <strong>' . number_format(($row['prod_basket_qty'] * $row['product_price']), 2, ',', ' ') . ' €</strong></button>
         </div>
         </div>
         </div>
         </div>
         ';
+        $basket_amount += ($row['prod_basket_qty'] * $row['product_price']);
       }
       mysqli_free_result($result);
     }
@@ -232,7 +234,7 @@ if (!empty($_GET["action"]))
                   </div>
                   <div class="col">
                     <input type="text" class="form-control"
-                    id="paymentFormCCVNumber" placeholder="CCV">
+                    id="paymentFormCCVNumber" placeholder="CVV">
                   </div>
                 </div>
               </p>
@@ -298,7 +300,7 @@ if (!empty($_GET["action"]))
       <div class="card my-4">
         <h5 class="card-header">Montant de votre commande</h5>
         <div class="card-body">
-          <label><strong>85,00 €</strong></label>
+          <label><strong>' . number_format($basket_amount, 2, ',', ' ') . ' €</strong></label>
         </div>
       </div>';
     }
