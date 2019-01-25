@@ -161,14 +161,14 @@ if (!empty($_GET["action"]))
       <!-- Post Content -->
       <p class="lead">Paiement</p>
 
-      <form>
+      <form id="myPaymentForm" action="payment.php" method="post">
         <!-- eCheque Payment Form -->
         <div class="card my-4">
           <h5 class="card-header">
             <input class="form-check-input" type="radio" name="selectPayment"
             id="selectPayment1" value="eChequePayment" checked>
             <label class="form-check-label" for="selectPayment1">
-              eChèque
+              <i class="fas fa-money-check"></i> eChèque
             </label>
           </h5>
           <div class="card-body">
@@ -210,46 +210,98 @@ if (!empty($_GET["action"]))
             <input class="form-check-input" type="radio" name="selectPayment"
             id="selectPayment2" value="debitCardPayment">
             <label class="form-check-label" for="selectPayment2">
-              Carte Bancaire
+              <i class="fas fa-credit-card"></i> Carte Bancaire
             </label>
           </h5>
           <div class="card-body">
             <div class="form-group">
-              <p>
-                Sélectionnez votre carte
+              <div class="row ml-2 mb-4">
+                <input id="token" name="token" type="hidden" value="">
                 <img src="./images/single.png" alt="payment options">
-                <select class="form-control" id="debitCardTypeSelect">
-                  <option>Visa</option>
-                  <option>MasterCard</option>
-                  <option>CB</option>
-                  <option>Visa Electron</option>
-                  <option>American Express</option>
-                </select>
-              </p>
-              <p>
-                <div class="row">
-                  <div class="col">
-                    <input type="text" class="form-control"
-                    id="paymentFormDebitCardNumber" placeholder="Numéro de carte">
-                  </div>
-                  <div class="col">
-                    <input type="text" class="form-control"
-                    id="paymentFormCCVNumber" placeholder="CVV">
-                  </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <input class="form-control" id="ccNo" type="text"
+                  size="20" value="" autocomplete="off"
+                  placeholder="Numéro de carte" required />
                 </div>
-              </p>
+                <div class="col">
+                  <span>Expire le </span>
+                  <input type="text" size="2" id="expMonth"
+                  placeholder="MM" required />
+                  <span> / </span>
+                  <input type="text" size="4" id="expYear"
+                  placeholder="YYYY" required />
+                </div>
+                <div class="col">
+                  <input id="cvv" size="4" type="text" value=""
+                  placeholder="CVV" autocomplete="off" required />
+                </div>
+              </div>
             </div>
           </div>
         </div>
         <div class="row">
           <div class="col-2 offset-10">
-            <button type="submit" class="btn btn-primary col-12">Payer</button>
+            <input type="submit" class="btn btn-primary col-12" value="Payer">
           </div>
         </div>
       </form>';
     }
     ?>
 
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://www.2checkout.com/checkout/api/2co.min.js"></script>
+
+    <script>
+    // Called when token created successfully.
+    var successCallback = function(data) {
+      var myForm = document.getElementById('myPaymentForm');
+
+      // Set the token as the value for the token input
+      myForm.token.value = data.response.token.token;
+
+      // IMPORTANT: Here we call `submit()` on the form element directly instead of using jQuery to prevent and infinite token request loop.
+      myForm.submit();
+    };
+
+    // Called when token creation fails.
+    var errorCallback = function(data) {
+      if (data.errorCode === 200) {
+        tokenRequest();
+      } else {
+        alert(data.errorMsg);
+      }
+    };
+
+    var tokenRequest = function() {
+      // Setup token request arguments
+      var args = {
+        sellerId: "901402149",
+        publishableKey: "B935668B-47CD-423E-A10A-76393763E7CD",
+        ccNo: $("#ccNo").val(),
+        cvv: $("#cvv").val(),
+        expMonth: $("#expMonth").val(),
+        expYear: $("#expYear").val()
+      };
+
+      // Make the token request
+      TCO.requestToken(successCallback, errorCallback, args);
+    };
+
+    $(function() {
+      // Pull in the public encryption key for our environment
+      TCO.loadPubKey('sandbox');
+
+      $("#myPaymentForm").submit(function(e) {
+        // Call our token request function
+        tokenRequest();
+
+        // Prevent form from submitting
+        return false;
+      });
+    });
+  </script>
     <br />
 
     <p class="lead">Ils ont pistachoté chez nous !</p>
@@ -306,45 +358,25 @@ if (!empty($_GET["action"]))
     }
     ?>
 
-    <!-- Categories Widget -->
-    <div class="card my-4">
-      <h5 class="card-header">Categories</h5>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-lg-6">
-            <ul class="list-unstyled mb-0">
-              <li>
-                <a href="#">Web Design</a>
-              </li>
-              <li>
-                <a href="#">HTML</a>
-              </li>
-              <li>
-                <a href="#">Freebies</a>
-              </li>
-            </ul>
-          </div>
-          <div class="col-lg-6">
-            <ul class="list-unstyled mb-0">
-              <li>
-                <a href="#">JavaScript</a>
-              </li>
-              <li>
-                <a href="#">CSS</a>
-              </li>
-              <li>
-                <a href="#">Tutorials</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
     <!-- Side Widget -->
     <div class="card my-4">
-      <h5 class="card-header">Side Widget</h5>
+      <h5 class="card-header">Livraison</h5>
       <div class="card-body">
-        You can put anything you want inside of these side widgets. They are easy to use, and feature the new Bootstrap 4 card containers!
+        Les délais de livraison sont de 3 jours ouvrés en moyenne.
+      </div>
+    </div>
+
+    <!-- Ad Widget -->
+    <div class="card my-4">
+      <h5 class="card-header">Publicité</h5>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-12">
+            <a href="https://www.citroen.fr/vehicules-neufs/citroen/citroen-c3/description.html">
+              <img class="card-img-top d-flsex rounded" src="./images/pub.png" alt="Publicité">
+            </a>
+          </div>
+        </div>
       </div>
     </div>
 
