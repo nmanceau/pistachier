@@ -6,7 +6,7 @@ include('includes/connexion_bd.php');
 include('includes/header.php');
 
 $user_id = $_SESSION['userID'];
-$customer_name = $_SESSION['name'] . " " . $_SESSION['surname'];
+$customer_name = $_SESSION['surname'] . " " . $_SESSION['name'];
 
 if (isset($_POST['quantity-input']) && isset($_POST['product-ID']))
 {

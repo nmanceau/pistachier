@@ -7,7 +7,7 @@ include('includes/header.php');
 
 $user_id = $_SESSION['userID'];
 
-$customer_name = $_SESSION['name'] . " " . $_SESSION['surname'];
+$customer_name = $_SESSION['surname'] . " " . $_SESSION['name'];
 
 ?>
 <!-- Page Content -->

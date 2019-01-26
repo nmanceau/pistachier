@@ -1,6 +1,7 @@
 <?php
 // Démarrage de la session
 session_start();
+$_SESSION['IsBasket'] = 0;
 include('includes/connexion_bd.php');
 $user_id = $_SESSION['userID'];
 
@@ -66,7 +67,40 @@ try {
         header('Location: post_payment.php');
         exit();
     }
-} catch (Twocheckout_Error $e) {
-    print_r($e->getMessage());
+}
+catch (Twocheckout_Error $e)
+{
+  include('includes/header.php');
+
+  echo '
+  <div class="container">
+
+    <div class="row">
+
+      <!-- Post Content Column -->
+      <div class="col-lg-8">
+
+        <!-- Title -->
+        <h1 class="mt-4">Désolé '. $_POST['customer_name'] . ', votre commande a échouée !</h1>
+
+
+        <div class="card my-4">
+          <h5 class="card-header">
+            Erreur
+          </h5>
+          <div class="card-body"> ';
+            print_r($e->getMessage());
+            echo '
+            Vous allez être redirigé vers l\'accueil
+          </div>
+        </div>
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container -->
+    ';
+
+  include('includes/footer.php');
+  header("refresh:4;url=index.php");
 }
  ?>
