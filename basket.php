@@ -6,6 +6,7 @@ include('includes/connexion_bd.php');
 include('includes/header.php');
 
 $user_id = $_SESSION['userID'];
+$customer_name = $_SESSION['name'] . " " . $_SESSION['surname'];
 
 if (isset($_POST['quantity-input']) && isset($_POST['product-ID']))
 {
@@ -217,6 +218,8 @@ if (!empty($_GET["action"]))
             <div class="form-group">
               <div class="row ml-2 mb-4">
                 <input id="token" name="token" type="hidden" value="">
+                <input id="total" name="total" type="hidden" value="' . $basket_amount . '">
+                <input id="customer_name" name="customer_name" type="hidden" value="' . $customer_name . '">
                 <img src="./images/single.png" alt="payment options">
               </div>
               <div class="row">
@@ -310,7 +313,7 @@ if (!empty($_GET["action"]))
     <div class="media mb-4">
       <img class="d-flex mr-3 rounded-circle" src="./images/cathy.jpeg" alt="">
       <div class="media-body">
-        <h5 class="mt-0">Cathy Soukhal</h5>
+        <h5 class="mt-0">Cathy Dupont</h5>
         Je vous recommande ce site ! On y trouve tout à petit prix !
       </div>
     </div>
@@ -319,14 +322,14 @@ if (!empty($_GET["action"]))
     <div class="media mb-4">
       <img class="d-flex mr-3 rounded-circle" src="./images/jean-jacky.jpeg" alt="">
       <div class="media-body">
-        <h5 class="mt-0">Jean-Jacky Chemla</h5>
+        <h5 class="mt-0">Jean-Jacky Moreau</h5>
         J'ai commandé une chamelle en ligne. Envoi rapide !
 
         <div class="media mt-4">
           <img class="d-flex mr-3 rounded-circle" src="./images/rachida.jpg" alt="">
           <div class="media-body">
-            <h5 class="mt-0">Rachida Abdul</h5>
-            Votre chamelle va t-elle dans les steppes arides de Tunisie ?
+            <h5 class="mt-0">Rachida Dati</h5>
+            Génial !
           </div>
         </div>
 
@@ -334,11 +337,15 @@ if (!empty($_GET["action"]))
           <img class="d-flex mr-3 rounded-circle" src="./images/donald.jpg" alt="">
           <div class="media-body">
             <h5 class="mt-0">Donald Trump</h5>
-            Fermez vos gueules !!!
+            Hello from USA
           </div>
         </div>
       </div>
     </div>
+
+    <br />
+    <br />
+    <br />
   </div>
 
   <!-- Sidebar Widgets Column -->
