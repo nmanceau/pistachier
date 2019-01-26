@@ -91,7 +91,6 @@ catch (Twocheckout_Error $e)
             Erreur
           </h5>
           <div class="card-body"> ';
-            echo 'isECheque vaut' . $_POST['isECheque'] . '/end';
             print_r($e->getMessage());
             echo '
             Vous allez être redirigé vers l\'accueil
@@ -104,6 +103,6 @@ catch (Twocheckout_Error $e)
     ';
 
   include('includes/footer.php');
-  //header("refresh:4;url=index.php");
+  header("refresh:4;url=index.php");
 }
  ?>
