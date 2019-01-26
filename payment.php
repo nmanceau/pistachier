@@ -41,7 +41,7 @@ try {
         {
           while($row = mysqli_fetch_array($result))
           {
-            $result = mysqli_query($connect,
+            $updateResult = mysqli_query($connect,
               'UPDATE products
               SET qty_available = qty_available - ' . $row['quantity'] . ' WHERE productID LIKE ' . $row['productID']
               );
