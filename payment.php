@@ -5,11 +5,13 @@ $_SESSION['IsBasket'] = 0;
 include('includes/connexion_bd.php');
 $user_id = $_SESSION['userID'];
 
+// GESTION CARTE BANCAIRE
 require_once("payment-api/Twocheckout.php");
 
 Twocheckout::privateKey('2118FCF8-BEC2-4CEC-84FC-D533F02C6CFD');
 Twocheckout::sellerId('901402149');
 Twocheckout::sandbox(true);
+
 
 try {
     $charge = Twocheckout_Charge::auth(array(
@@ -89,6 +91,7 @@ catch (Twocheckout_Error $e)
             Erreur
           </h5>
           <div class="card-body"> ';
+            echo 'isECheque vaut' . $_POST['isECheque'] . '/end';
             print_r($e->getMessage());
             echo '
             Vous allez être redirigé vers l\'accueil
@@ -101,6 +104,6 @@ catch (Twocheckout_Error $e)
     ';
 
   include('includes/footer.php');
-  header("refresh:4;url=index.php");
+  //header("refresh:4;url=index.php");
 }
  ?>

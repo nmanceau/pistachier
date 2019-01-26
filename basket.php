@@ -153,7 +153,58 @@ if (!empty($_GET["action"]))
       printf(mysqli_error($connect));
     }
     ?>
+    <script>
+      function isNumber(evt)
+      {
+        var charCode = (evt.which) ? evt.which : event.keyCode
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+          return false;
+        return true;
+      }
 
+      function PaymentECheque()
+      {
+        document.getElementById('myPaymentForm').isECheque.value = "1";
+
+        document.getElementById('paymentFormBankSelect').required = true;
+        document.getElementById('paymentFormBankAccountNumber').required = true;
+        document.getElementById('paymentFormChequeNumber').required = true;
+        document.getElementById('ccNo').required = false;
+        document.getElementById('expMonth').required = false;
+        document.getElementById('expYear').required = false;
+        document.getElementById('cvv').required = false;
+        document.getElementById('ccNo').value = "4000000000000000";
+        document.getElementById('expMonth').value = "10";
+        document.getElementById('expYear').value = "2020";
+        document.getElementById('cvv').value = "123";
+
+        var elementCard = document.getElementById('divCard');
+        elementCard.style.visibility = 'hidden';
+        var elementECheque= document.getElementById('divECheque');
+        elementECheque.style.visibility = 'visible';
+
+        document.myPaymentForm.action = "payment_echeque.php";
+      }
+      function PaymentCard()
+      {
+        document.getElementById('myPaymentForm').isECheque.value = "0";
+
+        document.getElementById('paymentFormBankSelect').required = false;
+        document.getElementById('paymentFormBankAccountNumber').required = false;
+        document.getElementById('paymentFormChequeNumber').required = false;
+        document.getElementById('ccNo').required = true;
+        document.getElementById('expMonth').required = true;
+        document.getElementById('expYear').required = true;
+        document.getElementById('cvv').required = true;
+
+        var elementCard = document.getElementById('divCard');
+        elementCard.style.visibility = 'visible';
+        var elementECheque= document.getElementById('divECheque');
+        elementECheque.parentNode.removeChild(elementECheque);
+
+        document.myPaymentForm.action = "payment.php";
+      }
+    </script>
 
     <?php
     if ($IsPayable !== false)
@@ -162,12 +213,12 @@ if (!empty($_GET["action"]))
       <!-- Post Content -->
       <p class="lead">Paiement</p>
 
-      <form id="myPaymentForm" action="payment.php" method="post">
+      <form name="myPaymentForm" id="myPaymentForm" action="/" method="post">
         <!-- eCheque Payment Form -->
-        <div class="card my-4">
+        <div id="divECheque" class="card my-4">
           <h5 class="card-header">
             <input class="form-check-input" type="radio" name="selectPayment"
-            id="selectPayment1" value="eChequePayment" checked>
+            id="selectPayment1" value="eChequePayment" onClick="PaymentECheque()">
             <label class="form-check-label" for="selectPayment1">
               <i class="fas fa-money-check"></i> eChèque
             </label>
@@ -175,6 +226,7 @@ if (!empty($_GET["action"]))
           <div class="card-body">
             <p>Découvrez notre système eChèque très sécurisé !</p>
             <div class="form-group">
+            <input id="isECheque" name="isECheque" type="hidden" value="">
               <p>
                 Sélectionnez votre banque compatible
                 <select class="form-control" id="paymentFormBankSelect">
@@ -193,7 +245,7 @@ if (!empty($_GET["action"]))
                 <div class="row">
                   <div class="col">
                     <input type="text" class="form-control"
-                    id="paymentFormBanckAccountNumber" placeholder="Numéro de compte">
+                    id="paymentFormBankAccountNumber" placeholder="Numéro de compte">
                   </div>
                   <div class="col">
                     <input type="text" class="form-control"
@@ -206,10 +258,10 @@ if (!empty($_GET["action"]))
         </div>
 
         <!-- Debit Card Payment Form -->
-        <div class="card my-4">
+        <div id="divCard" class="card my-4">
           <h5 class="card-header">
             <input class="form-check-input" type="radio" name="selectPayment"
-            id="selectPayment2" value="debitCardPayment">
+            id="selectPayment2" value="debitCardPayment" onClick="PaymentCard()">
             <label class="form-check-label" for="selectPayment2">
               <i class="fas fa-credit-card"></i> Carte Bancaire
             </label>
@@ -225,20 +277,20 @@ if (!empty($_GET["action"]))
               <div class="row">
                 <div class="col">
                   <input class="form-control" id="ccNo" type="text"
-                  size="20" value="" autocomplete="off"
-                  placeholder="Numéro de carte" required />
+                  size="20" value="" autocomplete="off" maxlength="16"
+                  placeholder="Numéro de carte" onkeypress="return isNumber(event)"/>
                 </div>
                 <div class="col">
                   <span>Expire le </span>
-                  <input type="text" size="2" id="expMonth"
-                  placeholder="MM" required />
+                  <input type="text" size="2" id="expMonth" maxlength="2"
+                  placeholder="MM" onkeypress="return isNumber(event)"/>
                   <span> / </span>
-                  <input type="text" size="4" id="expYear"
-                  placeholder="YYYY" required />
+                  <input type="text" size="4" id="expYear" maxlength="4"
+                  placeholder="AAAA" onkeypress="return isNumber(event)"/>
                 </div>
                 <div class="col">
-                  <input id="cvv" size="4" type="text" value=""
-                  placeholder="CVV" autocomplete="off" required />
+                  <input id="cvv" size="4" type="text" value="" maxlength="3"
+                  placeholder="CVV" autocomplete="off" onkeypress="return isNumber(event)"/>
                 </div>
               </div>
             </div>
@@ -251,12 +303,15 @@ if (!empty($_GET["action"]))
         </div>
       </form>';
     }
+
+
     ?>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="https://www.2checkout.com/checkout/api/2co.min.js"></script>
 
     <script>
+
     // Called when token created successfully.
     var successCallback = function(data) {
       var myForm = document.getElementById('myPaymentForm');
@@ -297,14 +352,16 @@ if (!empty($_GET["action"]))
       TCO.loadPubKey('sandbox');
 
       $("#myPaymentForm").submit(function(e) {
-        // Call our token request function
-        tokenRequest();
 
-        // Prevent form from submitting
-        return false;
+        // Call our token request function
+      tokenRequest();
+
+      // Prevent form from submitting
+      return false;
       });
     });
   </script>
+
     <br />
 
     <p class="lead">Ils ont pistachoté chez nous !</p>
