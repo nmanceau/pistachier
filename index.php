@@ -24,18 +24,18 @@ include('includes/securite.php');
         while ($row = mysqli_fetch_array($result)) {
           $name = $row["name"];
 
-          echo "<a href=\"index.php?name='".$name."'\" class=\"list-group-item\">".$name."</a>";
+          echo '<a href="index.php?name=' . $name . '" class="list-group-item">' . $name . '</a>';
         }
         // Libération des ressources associées au jeu de résultats
         mysqli_free_result($result);
 
         // Cas du premier lancement de la page, pré selection de la catégorie à ALL
         if (empty($_GET)) {
-          header('Location: index.php?name=%27ALL%27');
+          header('Location: index.php?name=ALL');
         }
 
         // Récupération de l'ID de la catégorie sélectioné
-        $result = mysqli_query($connect,"SELECT categoryID from category where name LIKE ". Securite::bdd($connect, $_GET['name'])) or die (mysqli_error($connect));
+        $result = mysqli_query($connect,'SELECT categoryID from category where name LIKE "' . Securite::bdd($connect, $_GET['name']) . '"') or die (mysqli_error($connect));
         $row = mysqli_fetch_array($result);
         $category_choix = $row["categoryID"];
         ?>
