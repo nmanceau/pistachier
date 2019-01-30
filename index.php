@@ -83,7 +83,7 @@ include('includes/securite.php');
           <h4 class=\"card-title\">
           <a href=\"#\">".$name_product."</a>
           </h4>
-          <h5>".$price." € </h5>
+          <h5>". number_format($price, 2, ',', ' ')." €</h5>
           <p class=\"card-text\">".$description."
           <br />
           <br />
