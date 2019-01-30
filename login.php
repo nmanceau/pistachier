@@ -32,8 +32,8 @@ include('includes/header.php');
             // Test l'appui sur le bouton submit et test si les champs login et password sont mises à 1
             if(isset($_POST['submit']) && $_POST['submit']=='Login' && isset($_POST["login"]) && isset($_POST["password"])){
               // Initialisation des variables
-              $username = $_POST["login"];
-              $password = $_POST["password"];
+              $username = Securite::bdd($connect, $_POST["login"]);
+              $password = Securite::bdd($connect, $_POST["password"]);
 
               // Utilisation de l'algorithme bcrypt par défault
               $password_hash = password_hash(trim($password), PASSWORD_DEFAULT);
@@ -43,7 +43,7 @@ include('includes/header.php');
               // Test si l'utilisateur existe déjà dans la base de données
               if($stmt = mysqli_prepare($connect, "SELECT email, surname, name, userID, password from users WHERE email = ?")){
                 // Lecture des paramètres de marques et utilisation de la classe de sécurité
-                mysqli_stmt_bind_param($stmt, "s", Securite::bdd($connect,$username));
+                mysqli_stmt_bind_param($stmt, "s", $username);
 
                 /* Test et exécution de la requête */
                 if(!mysqli_stmt_execute($stmt)){
@@ -66,7 +66,7 @@ include('includes/header.php');
                 $_SESSION['surname'] = $surnameBdd;
                 $_SESSION['name'] = $nameBdd;
                 $_SESSION['userID'] = $userIDBdd;
-                header('Location: index.php?name=%27ALL%27');
+                header('Location: index.php?name=ALL');
 
                 mysqli_stmt_close($stmt);
               }else {
