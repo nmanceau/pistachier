@@ -6,6 +6,7 @@ $_SESSION['IsBasket'] = 0;
 include('includes/connexion_bd.php');
 // Inclusion du fichier d'en tête
 include('includes/header.php');
+include('includes/securite.php');
 ?>
 <!-- Page Content -->
 <div class="container">
@@ -34,7 +35,7 @@ include('includes/header.php');
         }
 
         // Récupération de l'ID de la catégorie sélectioné
-        $result = mysqli_query($connect,"SELECT categoryID from category where name LIKE ".$_GET['name']) or die (mysqli_error($connect));
+        $result = mysqli_query($connect,"SELECT categoryID from category where name LIKE ". Securite::bdd($connect, $_GET['name'])) or die (mysqli_error($connect));
         $row = mysqli_fetch_array($result);
         $category_choix = $row["categoryID"];
         ?>
