@@ -97,7 +97,7 @@ include('includes/securite.php');
           </p>
           </div>
           <div class=\"card-footer\">
-          <form method=\"POST\" action=\"index.php?name=%27ALL%27\">
+          <form method=\"POST\" action=\"index.php?name=ALL\">
           <small class=\"text-muted\">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
           ";
           // Test si un utilisateur est loggé et que la quantité est différente de 0 pour afficher ou non le bouton d'ajout au panier
